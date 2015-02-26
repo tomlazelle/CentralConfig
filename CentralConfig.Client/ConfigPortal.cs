@@ -47,6 +47,25 @@ namespace CentralConfig.Client
             return dataResult;
         }
 
+        public T GetConfig<T>(string environment, Func<IEnumerable<NameValueRequest>,T> mappingFunction) where T : new()
+        {
+            var builder = new StringBuilder(_baseUrl);
+            builder.Append("api/config");
+            builder.AppendFormat("?environment={0}", environment);
+
+            var message = HttpMessageRequest.CreateRequest(builder.ToString(), HttpMethod.Get);
+            var result = _client.SendAsync(message).Result;
+
+            
+            
+            
+            var data = result.Content.ReadAsAsync<IEnumerable<NameValueRequest>>().Result.ToList();
+
+            var dataResult = mappingFunction.Invoke(data);
+
+            return dataResult;
+        }
+
         public void Add(string name, string value, string groupName,string environment)
         {
             var message = HttpMessageRequest.CreateRequest(_baseUrl + "api/config", HttpMethod.Post, new NameValueRequest
@@ -105,4 +124,6 @@ namespace CentralConfig.Client
             return data;
         }
     }
+
+    
 }
