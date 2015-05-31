@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
+using CentralConfig.DependencyResolution;
 using CentralConfig.Models;
 using Raven.Client;
 
@@ -98,12 +99,12 @@ namespace CentralConfig.Controllers
             }
         }
 
-        public IEnumerable<NameValueModel> Get(string environment)
+        public IEnumerable<ConfigItemsIndex.Result> Get(string environment)
         {
             using (var session = _documentStore.OpenSession())
             {
-                
-                    return session.Query<NameValueModel>()
+
+                return session.Query<ConfigItemsIndex.Result>()
                         .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
                         .Where(x =>  x.Environment == environment).ToList();
                 

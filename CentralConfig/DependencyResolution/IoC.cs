@@ -58,30 +58,37 @@ namespace CentralConfig.DependencyResolution
             };
 
             store.Initialize();
-            //            IndexCreation.CreateIndexes(typeof(ConfigItemsIndex).Assembly, store);
+            IndexCreation.CreateIndexes(typeof(ConfigItemsIndex).Assembly, store);
+
             return store;
         }
     }
 
-    //    public class ConfigItemsIndex : AbstractIndexCreationTask<NameValueModel, ConfigItemsIndex.Result>
-    //    {
-    //        public class Result
-    //        {
-    //            public int Id { get; set; }
-    //            public string Name { get; set; }
-    //            public string Value { get; set; }
-    //            public string GroupName { get; set; }
-    //            public int Version { get; set; }
-    //        }
-    //
-    //        public ConfigItemsIndex()
-    //        {
-    //            Map = items => (from item in items
-    //                            group item by item.Name)
-    //                            .Select(g => g.OrderByDescending(p => p.Version).First());
-    //
-    //
-    //            StoreAllFields(FieldStorage.Yes);
-    //        }
-    //    }
+    public class ConfigItemsIndex : AbstractIndexCreationTask<NameValueModel, ConfigItemsIndex.Result>
+    {
+        public class Result
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public string GroupName { get; set; }
+            public string Environment { get; set; }
+            public int Version { get; set; }
+        }
+
+        public ConfigItemsIndex()
+        {
+            Map = items => from x in items
+                           group x by new {x.Name, x.GroupName, x.Environment} into g
+                           select new Result
+                           {
+                               Name = g.Key.Name,
+                               GroupName = g.Key.GroupName,
+                               Value = g.FirstOrDefault(x=>x.Version == g.Max(m=>m.Version)).Value,                               
+                               Environment = g.Key.Environment
+                           };
+
+            
+            StoreAllFields(FieldStorage.Yes);
+        }
+    }
 }

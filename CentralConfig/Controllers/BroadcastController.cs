@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -38,18 +39,19 @@ namespace CentralConfig.Controllers
 
         public IEnumerable<BroadCastNotifyRequest> Get()
         {
-            IQueryable<BroadCastNotifyRequest> result;
+            List<BroadCastNotifyRequest> result;
 
             using (var session = _documentStore.OpenSession())
             {
                 result = session.Query<BroadCastNotifyModel>()
+                    .Customize(x=>x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
                     .Select(x => new BroadCastNotifyRequest
                     {
                         Name = x.Name,
                         EventName = x.EventName,
                         GroupName = x.GroupName,
                         UrlCallback = x.UrlCallback
-                    });
+                    }).ToList();
             }
 
             return result;

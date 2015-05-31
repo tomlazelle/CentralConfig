@@ -40,7 +40,7 @@ namespace WebClientTestApp.Controllers
             {
                 partialData = "data changed";
             }
-            return View("Index");
+            return RedirectToAction("Index");
         }
     }
 
