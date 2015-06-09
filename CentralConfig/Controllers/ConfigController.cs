@@ -99,17 +99,30 @@ namespace CentralConfig.Controllers
             }
         }
 
-        public IEnumerable<ConfigItemsIndex.Result> Get(string environment)
+        public IEnumerable<NameValueRequest> Get(string environment)
         {
+            IEnumerable<NameValueRequest> result;
+
             using (var session = _documentStore.OpenSession())
             {
 
-                return session.Query<ConfigItemsIndex.Result>()
-                        .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
-                        .Where(x =>  x.Environment == environment).ToList();
-                
+
+
+                var temp = session.Query<ConfigItemsIndex.Result, ConfigItemsIndex>()
+                        .Customize(x => x.WaitForNonStaleResultsAsOfLastWrite())
+                        .Where(x => x.Environment == environment).AsProjection<ConfigItemsIndex.Result>().ToList();
+
+                result = temp.Select(x => new NameValueRequest
+                        {
+                            Name = x.Name,
+                            Environment = x.Environment,
+                            GroupName = x.GroupName,
+                            Value = x.Value
+                        });
+
 
             }
+            return result;
         }
 
         public IList<NameValueRequest> Get()

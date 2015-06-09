@@ -53,8 +53,8 @@ namespace CentralConfig.DependencyResolution
             var store = new EmbeddableDocumentStore
             {
                 RunInMemory = true
-                //                Url = "http://localhost:8080",
-                //                DefaultDatabase = "CentralConfig"
+//                                Url = "http://localhost:8080",
+//                                DefaultDatabase = "CentralConfig"
             };
 
             store.Initialize();
@@ -72,7 +72,6 @@ namespace CentralConfig.DependencyResolution
             public string Value { get; set; }
             public string GroupName { get; set; }
             public string Environment { get; set; }
-            public int Version { get; set; }
         }
 
         public ConfigItemsIndex()
