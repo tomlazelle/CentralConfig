@@ -25,7 +25,7 @@ namespace CentralConfig.Controllers
         {
             using (var session = _documentStore.OpenSession())
             {
-                var allResults = session.Query<NameValueModel>().Take(1024).ToList();
+                var allResults = session.Query<NameValueModel>().ToList();
 
                 foreach (var item in allResults)
                 {
@@ -52,9 +52,11 @@ namespace CentralConfig.Controllers
             using (var session = _documentStore.OpenSession())
             {
                 var model = session
-                    .Query<NameValueModel>()
+                    .Query<ConfigItemsIndex.Result, ConfigItemsIndex>()
                     .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
-                    .Where(x => x.Name == request.Name && x.GroupName == request.GroupName)
+                    .Where(x => x.Name == request.Name && x.GroupName == request.GroupName && x.Environment == request.Environment)
+                    .AsProjection<ConfigItemsIndex.Result>()
+                    .OrderByDescending(x=>x.Version)
                     .FirstOrDefault();
 
 
@@ -107,7 +109,17 @@ namespace CentralConfig.Controllers
             {
 
 
-
+//                from c in data
+//                          group c by new { c.Name, c.Environment, c.GroupName } into x
+//                          let z = x.Single(s => s.Version == x.Max(m => m.Version))
+//                          select new Result
+//                          {
+//                              Name = z.Name,
+//                              Environment = z.Environment,
+//                              GroupName = z.GroupName,
+//                              Value = z.Value,
+//                              Version = z.Version,
+//                          }
                 var temp = session.Query<ConfigItemsIndex.Result, ConfigItemsIndex>()
                         .Customize(x => x.WaitForNonStaleResultsAsOfLastWrite())
                         .Where(x => x.Environment == environment).AsProjection<ConfigItemsIndex.Result>().ToList();
