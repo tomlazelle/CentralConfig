@@ -7,21 +7,20 @@ using System.Web.Http;
 using CentralConfig.Client;
 using CentralConfig.Models;
 using Microsoft.Owin.Hosting;
-using NUnit.Framework;
 using Owin;
 using Raven.Client;
+using Should;
 
 namespace CentralConfig.Tests
 {
 
 
-    [TestFixture]
-    public class BroadcastTestFixture : InMemoryApiServer
+    public class BroadcastTests : InMemoryApiServer
     {
         private ConfigPortal portal;
 
-        [TestFixtureSetUp]
-        public void FixtureSetup()
+
+        public BroadcastTests()
         {
 
             portal = new ConfigPortal(Server.HttpClient);
@@ -50,7 +49,7 @@ namespace CentralConfig.Tests
         //            }
         //        }
 
-        [Test]
+        
         public void A_add_broadcast_event_notify()
         {
 
@@ -58,12 +57,12 @@ namespace CentralConfig.Tests
 
             var watchers = portal.GetWatchers();
 
+            watchers.ShouldNotBeNull();
+            watchers.Count().ShouldBeGreaterThan(0);
 
-            Assert.That(watchers, Is.Not.Null);
-            Assert.That(watchers.Count(), Is.GreaterThan(0));
         }
 
-        [Test]
+        
         public void B_add_config_item_change_and_wait_for_callback()
         {
             IsCompleted = false;
@@ -81,7 +80,9 @@ namespace CentralConfig.Tests
             {
 
             }
-            Assert.True(IsCompleted);
+            
+            IsCompleted.ShouldBeTrue();
+            
         }
 
         void BroadcastTestFixture_EventReceived(object sender, EventArgs e)
@@ -112,7 +113,7 @@ namespace CentralConfig.Tests
     {
         public HttpResponseMessage Post(OnChangedMessage message)
         {
-            BroadcastTestFixture.IsCompleted = true;
+            BroadcastTests.IsCompleted = true;
 
             return Request.CreateResponse(HttpStatusCode.Created);
         }

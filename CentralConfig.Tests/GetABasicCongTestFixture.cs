@@ -1,27 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CentralConfig.Client;
-using CentralConfig.Models;
-using NUnit.Framework;
 using Should;
 
 namespace CentralConfig.Tests
 {
-    [TestFixture]
-    public class GetABasicCongTestFixture : InMemoryApiServer
+    public class GetABasicCongTests : InMemoryApiServer
     {
         private ConfigPortal portal;
 
-        [TestFixtureSetUp]
-        public void FixtureSetup()
+        public GetABasicCongTests()
         {
             portal = new ConfigPortal(Server.HttpClient);
 
             portal.RemoveAll();
         }
 
-
-        [Test]
         public void A_add_1_config_item()
         {
             var expected = "I Dit It";
@@ -29,12 +22,10 @@ namespace CentralConfig.Tests
             portal.Add("DoIt", expected, "", "dev");
 
             var result = portal.GetConfig<MyCustomConfig>("dev");
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.DoIt, Is.EqualTo(expected));
+            result.ShouldNotBeNull();
+            result.DoIt.ShouldEqual(expected);
         }
 
-        [Test]
         public void B_add_the_same_config_item_with_a_different_value()
         {
             var expected = "I Dit It Again";
@@ -43,21 +34,16 @@ namespace CentralConfig.Tests
 
             var result = portal.GetConfig<MyCustomConfig>("dev");
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.DoIt, Is.EqualTo(expected));
+            result.ShouldNotBeNull();
+            result.DoIt.ShouldEqual(expected);
         }
-
-
-
-
     }
 
-    [TestFixture]
+
     public class can_use_automapper_profile_wth_get_config : InMemoryApiServer
     {
         private ConfigPortal portal;
 
-        [SetUp]
         public void Setup()
         {
             portal = new ConfigPortal(Server.HttpClient);
@@ -65,7 +51,6 @@ namespace CentralConfig.Tests
             portal.RemoveAll();
         }
 
-        [Test]
         public void cann_get_a_confg_with_automapper()
         {
             portal.Add("NG1", "VG1", "G1", "dev");
@@ -82,7 +67,9 @@ namespace CentralConfig.Tests
                 Settings = items.Where(x => x.GroupName != "G1").ToDictionary(x => x.Name, z => z.Value)
             });
 
-            Assert.That(result, Is.Not.Null);
+
+            result.ShouldNotBeNull();
+
             result.G1.Count.ShouldEqual(2);
             result.Settings.Count.ShouldEqual(1);
         }

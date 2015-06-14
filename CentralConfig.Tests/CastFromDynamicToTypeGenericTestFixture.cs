@@ -1,15 +1,11 @@
 ﻿using System.Dynamic;
-using NUnit.Framework;
 using CentralConfig.Common;
+using Should;
 
 namespace CentralConfig.Tests
 {
-    [TestFixture]
-    public class CastFromDynamicToTypeGenericTestFixture
+    public class CastFromDynamicToTypeGenerics
     {
-
-
-        [Test]
         public void TestName()
         {
             dynamic customer = new ExpandoObject();
@@ -17,7 +13,10 @@ namespace CentralConfig.Tests
 
             Customer actual = ObjectExtensions.ToPOCO(customer, new Customer());
 
-            Assert.That(actual.Name, Is.EqualTo(customer.Name));
+            string expected = customer.Name;
+            string actualName = actual.Name;
+            
+            actualName.ShouldEqual(expected);
         }
     }
 
@@ -25,6 +24,4 @@ namespace CentralConfig.Tests
     {
         public string Name { get; set; }
     }
-
-
 }

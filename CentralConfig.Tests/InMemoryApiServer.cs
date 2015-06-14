@@ -1,14 +1,14 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using CentralConfig.DependencyResolution;
 using Microsoft.Owin.Testing;
-using NUnit.Framework;
 using Owin;
 using StructureMap;
 
 namespace CentralConfig.Tests
 {
-    public abstract class InMemoryApiServer
+    public abstract class InMemoryApiServer : IDisposable
     {
         public static IContainer Container;
         public string BaseUrl = "http://localhost/";
@@ -21,13 +21,11 @@ namespace CentralConfig.Tests
             Server = TestServer.Create<MyStartup>();
         }
 
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
+        public void Dispose()
         {
             Server.Dispose();
             Container.Dispose();
         }
-
 
         internal class MyStartup
         {

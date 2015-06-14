@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+
 using Should;
 
 namespace CentralConfig.Tests
 {
-    [TestFixture]
-    public class FuncMappingTestFixture
+    
+    public class FuncMappingTests
     {
        
 
 
-        [Test]
+        
         public void can_use_a_mapping_action()
         {
             var testItems = new[]
