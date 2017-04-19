@@ -55,7 +55,7 @@ namespace CentralConfig.Controllers
                     .Query<ConfigItemsIndex.Result, ConfigItemsIndex>()
                     .Customize(x => x.WaitForNonStaleResults(TimeSpan.FromSeconds(5)))
                     .Where(x => x.Name == request.Name && x.GroupName == request.GroupName && x.Environment == request.Environment)
-                    .AsProjection<ConfigItemsIndex.Result>()
+                    .ProjectFromIndexFieldsInto<ConfigItemsIndex.Result>()
                     .OrderByDescending(x=>x.Version)
                     .FirstOrDefault();
 
@@ -122,7 +122,8 @@ namespace CentralConfig.Controllers
 //                          }
                 var temp = session.Query<ConfigItemsIndex.Result, ConfigItemsIndex>()
                         .Customize(x => x.WaitForNonStaleResultsAsOfLastWrite())
-                        .Where(x => x.Environment == environment).AsProjection<ConfigItemsIndex.Result>().ToList();
+                        .Where(x => x.Environment == environment)
+                        .ProjectFromIndexFieldsInto<ConfigItemsIndex.Result>().ToList();
 
                 result = temp.Select(x => new NameValueRequest
                         {
