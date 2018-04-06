@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  raven:
+       image: ravendb/ravendb
+       ports:
+         - "8080:8080"
